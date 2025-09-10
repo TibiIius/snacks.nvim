@@ -82,7 +82,7 @@ end
 ---@param cmd? string | string[]
 ---@param opts? snacks.terminal.Opts
 function M.open(cmd, opts)
-  local id = vim.v.count1
+  local id = opts and opts.env and opts.env.id or vim.v.count1
   opts = Snacks.config.get("terminal", defaults --[[@as snacks.terminal.Opts]], opts)
   opts.win = Snacks.win.resolve("terminal", {
     position = cmd and "float" or "bottom",
