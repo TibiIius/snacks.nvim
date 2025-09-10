@@ -15,6 +15,7 @@ M.meta = {
 ---@class snacks.terminal.Config
 ---@field win? snacks.win.Config|{}
 ---@field shell? string|string[] The shell to use. Defaults to `vim.o.shell`
+---@field id string The shell to use. Defaults to `vim.o.shell`
 ---@field override? fun(cmd?: string|string[], opts?: snacks.terminal.Opts) Use this to use a different terminal implementation
 local defaults = {
   win = { style = "terminal" },
@@ -82,7 +83,7 @@ end
 ---@param cmd? string | string[]
 ---@param opts? snacks.terminal.Opts
 function M.open(cmd, opts)
-  local id = opts and opts.env and opts.env.id or vim.v.count1
+  local id = opts and opts.id or vim.v.count1
   opts = Snacks.config.get("terminal", defaults --[[@as snacks.terminal.Opts]], opts)
   opts.win = Snacks.win.resolve("terminal", {
     position = cmd and "float" or "bottom",
