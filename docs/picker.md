@@ -14,7 +14,7 @@ Snacks now comes with a modern fuzzy-finder to navigate the Neovim universe.
 - 🔎 over 40 [built-in sources](https://github.com/folke/snacks.nvim/blob/main/docs/picker.md#-sources)
 - 🚀 Fast and powerful fuzzy matching engine that supports the [fzf](https://junegunn.github.io/fzf/search-syntax/) search syntax
   - additionally supports field searches like `file:lua$ 'function`
-  - `files` and `grep` additionally support adding optiont like `foo -- -e=lua`
+  - `files` and `grep` additionally support adding options like `foo -- -e=lua`
 - 🌲 uses **treesitter** highlighting where it makes sense
 - 🧹 Sane default settings so you can start using it right away
 - 💪 Finders and matchers run asynchronously for maximum performance
@@ -28,7 +28,7 @@ Some acknowledgements:
 
 - [fzf-lua](https://github.com/ibhagwan/fzf-lua)
 - [telescope.nvim](https://github.com/nvim-telescope/telescope.nvim)
-- [mini.pick](https://github.com/echasnovski/mini.pick)
+- [mini.pick](https://github.com/nvim-mini/mini.pick)
 
 ## 📚 Usage
 
@@ -620,6 +620,23 @@ Snacks.picker.pick({source = "files", ...})
 ```
 
 ```lua
+---@alias snacks.Picker.ref (fun():snacks.Picker?)|{value?: snacks.Picker}
+```
+
+```lua
+---@class snacks.picker.Last
+---@field cursor number
+---@field topline number
+---@field opts? snacks.picker.Config
+---@field selected snacks.picker.Item[]
+---@field filter snacks.picker.Filter
+```
+
+```lua
+---@alias snacks.picker.history.Record {pattern: string, search: string, live?: boolean}
+```
+
+```lua
 ---@alias snacks.picker.Extmark vim.api.keyset.set_extmark|{col:number, row?:number, field?:string}
 ---@alias snacks.picker.Text {[1]:string, [2]:string?, virtual?:boolean, field?:string}
 ---@alias snacks.picker.Highlight snacks.picker.Text|snacks.picker.Extmark
@@ -688,6 +705,7 @@ It's a previewer that shows a preview based on the item data.
 ---@field preset? string|fun(source:string):string
 ---@field hidden? ("input"|"preview"|"list")[] don't show the given windows when opening the picker. (only "input" and "preview" make sense)
 ---@field auto_hide? ("input"|"preview"|"list")[] hide the given windows when not focused (only "input" makes real sense)
+---@field config? fun(layout:snacks.picker.layout.Config) customize the resolved layout config
 ```
 
 ```lua
@@ -695,23 +713,6 @@ It's a previewer that shows a preview based on the item data.
 ---@field input? snacks.win.Config|{} input window config
 ---@field list? snacks.win.Config|{} result list window config
 ---@field preview? snacks.win.Config|{} preview window config
-```
-
-```lua
----@alias snacks.Picker.ref (fun():snacks.Picker?)|{value?: snacks.Picker}
-```
-
-```lua
----@class snacks.picker.Last
----@field cursor number
----@field topline number
----@field opts? snacks.picker.Config
----@field selected snacks.picker.Item[]
----@field filter snacks.picker.Filter
-```
-
-```lua
----@alias snacks.picker.history.Record {pattern: string, search: string, live?: boolean}
 ```
 
 ## 📦 Module
@@ -1849,6 +1850,7 @@ Open recent projects
 ---@field projects? string[] list of project directories
 ---@field patterns? string[] patterns to detect project root directories
 ---@field recent? boolean include project directories of recent files
+---@field max_depth? number maximum depth to search in dev directories (default: 2)
 {
   finder = "recent_projects",
   format = "file",
@@ -2239,7 +2241,7 @@ M.sidebar
 
 ```lua
 {
-  preview = false,
+  hidden = { "preview" },
   layout = {
     backdrop = false,
     width = 0.5,
@@ -2341,7 +2343,7 @@ M.sidebar
 
 ```lua
 {
-  preview = false,
+  hidden = { "preview" },
   layout = {
     backdrop = false,
     row = 1,
@@ -2731,8 +2733,6 @@ Snacks.picker.actions.toggle_preview(picker)
 Snacks.picker.actions.yank(picker, item, action)
 ```
 
-
-
 ## 📦 `snacks.picker.core.picker`
 
 ```lua
@@ -2987,3 +2987,5 @@ Get the word under the cursor or the current visual selection
 ```lua
 picker:word()
 ```
+
+
